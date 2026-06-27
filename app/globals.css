@@ -1,0 +1,275 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ------------------------------------------------------------------ *
+ * Design tokens — light + dark. Indigo/violet accent for a modern,
+ * "cool" feel. Consumed by shadcn-style primitives via @theme below.
+ * ------------------------------------------------------------------ */
+:root {
+  --radius: 0.7rem;
+
+  --background: oklch(0.99 0 0);
+  --foreground: oklch(0.2 0 0);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0 0);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0 0);
+
+  --primary: oklch(0.54 0.22 280);
+  --primary-foreground: oklch(0.99 0 0);
+
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.3 0 0);
+
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.54 0 0);
+
+  --accent: oklch(0.95 0 0);
+  --accent-foreground: oklch(0.3 0 0);
+
+  --destructive: oklch(0.58 0.23 27);
+  --destructive-foreground: oklch(0.99 0 0);
+
+  --success: oklch(0.6 0.16 150);
+  --warning: oklch(0.72 0.16 70);
+
+  --border: oklch(0.91 0 0);
+  --input: oklch(0.91 0 0);
+  --ring: oklch(0.54 0.22 280);
+}
+
+.dark {
+  /* True-black background per request; cards/surfaces step up in lightness. */
+  --background: oklch(0 0 0);
+  --foreground: oklch(0.97 0 0);
+
+  --card: oklch(0.14 0 0);
+  --card-foreground: oklch(0.97 0 0);
+
+  --popover: oklch(0.14 0 0);
+  --popover-foreground: oklch(0.97 0 0);
+
+  --primary: oklch(0.7 0.17 282);
+  --primary-foreground: oklch(0.1 0 0);
+
+  --secondary: oklch(0.19 0 0);
+  --secondary-foreground: oklch(0.97 0 0);
+
+  --muted: oklch(0.19 0 0);
+  --muted-foreground: oklch(0.68 0 0);
+
+  --accent: oklch(0.24 0 0);
+  --accent-foreground: oklch(0.97 0 0);
+
+  --destructive: oklch(0.66 0.2 27);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  --success: oklch(0.72 0.16 150);
+  --warning: oklch(0.8 0.15 70);
+
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.7 0.17 282);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --animate-shimmer: shimmer 1.6s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Accessible focus ring everywhere */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Subtle dot-grid backdrop (no color gradients) for marketing/auth screens */
+.dot-grid {
+  background-image: radial-gradient(
+    circle,
+    var(--border) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+}
+
+/* ProseMirror editor surface */
+.ProseMirror {
+  outline: none;
+  min-height: 60vh;
+  line-height: 1.75;
+}
+.ProseMirror p { margin: 0.5rem 0; }
+.ProseMirror h1 { font-size: 1.875rem; font-weight: 700; margin: 1.2rem 0 0.6rem; }
+.ProseMirror h2 { font-size: 1.5rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+.ProseMirror h3 { font-size: 1.25rem; font-weight: 600; margin: 0.9rem 0 0.4rem; }
+.ProseMirror ul { list-style: disc; padding-left: 1.5rem; }
+.ProseMirror ol { list-style: decimal; padding-left: 1.5rem; }
+.ProseMirror blockquote {
+  border-left: 3px solid var(--primary);
+  padding-left: 1rem;
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+.ProseMirror pre {
+  background: var(--muted);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  font-family: var(--font-mono);
+  overflow-x: auto;
+}
+.ProseMirror code { font-family: var(--font-mono); font-size: 0.9em; }
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--muted-foreground);
+  pointer-events: none;
+  height: 0;
+}
+
+/* Remote collaboration carets (TipTap CollaborationCaret) */
+.ProseMirror .collaboration-carets__caret {
+  position: relative;
+  margin-left: -1px;
+  margin-right: -1px;
+  border-left: 2px solid;
+  border-right: 0;
+  word-break: normal;
+  pointer-events: none;
+}
+.ProseMirror .collaboration-carets__label {
+  position: absolute;
+  top: -1.5em;
+  left: -2px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  color: white;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.35rem;
+  user-select: none;
+}
+
+/* Command palette (cmdk) */
+[cmdk-overlay] {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: oklch(0 0 0 / 0.5);
+  backdrop-filter: blur(2px);
+}
+[cmdk-dialog] {
+  position: fixed;
+  z-index: 90;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(92vw, 36rem);
+}
+[cmdk-root] {
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px oklch(0 0 0 / 0.35);
+  overflow: hidden;
+}
+[cmdk-input] {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  outline: none;
+  padding: 1rem 1.1rem;
+  font-size: 0.95rem;
+  border-bottom: 1px solid var(--border);
+}
+[cmdk-list] {
+  max-height: 22rem;
+  overflow: auto;
+  padding: 0.5rem;
+}
+[cmdk-group-heading] {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-foreground);
+}
+[cmdk-item] {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  cursor: pointer;
+  user-select: none;
+}
+[cmdk-item][data-selected="true"] {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+[cmdk-empty] {
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

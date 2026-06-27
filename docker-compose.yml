@@ -1,0 +1,63 @@
+# Local/demo orchestration: Postgres + one-shot migration + Next.js app + WS server.
+# Usage:
+#   AUTH_SECRET=$(openssl rand -base64 32) docker compose up --build
+# Then open http://localhost:3000
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: synced_docs
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d synced_docs"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # One-shot: applies schema + RLS migrations and creates the app_user role.
+  migrate:
+    build: .
+    command: npm run db:migrate
+    environment:
+      DATABASE_ADMIN_URL: postgres://postgres:postgres@db:5432/synced_docs
+      DATABASE_URL: postgres://app_user:app_user@db:5432/synced_docs
+    depends_on:
+      db:
+        condition: service_healthy
+
+  app:
+    build: .
+    command: npm run start
+    environment:
+      DATABASE_URL: postgres://app_user:app_user@db:5432/synced_docs
+      AUTH_SECRET: ${AUTH_SECRET:-dev-secret-change-me}
+      NEXT_PUBLIC_WS_URL: ws://localhost:1234
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.0-flash}
+    ports:
+      - "3000:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  ws:
+    build: .
+    command: npm run ws
+    environment:
+      DATABASE_URL: postgres://app_user:app_user@db:5432/synced_docs
+      AUTH_SECRET: ${AUTH_SECRET:-dev-secret-change-me}
+      WS_PORT: "1234"
+    ports:
+      - "1234:1234"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  pgdata:

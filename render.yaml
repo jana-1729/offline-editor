@@ -1,0 +1,40 @@
+# Render Blueprint — one-click Postgres + realtime WS server (+ auto-migrate).
+# In Render: New → Blueprint → pick this repo. It provisions everything below.
+#
+# The Next.js app stays on Vercel. After this deploys, copy two values into
+# Vercel env: AUTH_SECRET (from the tandem-ws service) and the app_user
+# DATABASE_URL (see DEPLOY.md), plus NEXT_PUBLIC_WS_URL = wss://<this service>.
+#
+# Note: the WS server talks to Postgres only through the service role
+# (asService / RLS-bypass), so it safely uses the owner connection string here.
+# The browser-facing app must use the restricted app_user role for RLS.
+
+databases:
+  - name: tandem-db
+    databaseName: synced_docs
+    plan: free
+    postgresMajorVersion: "16"
+
+services:
+  - type: web
+    name: tandem-ws
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm ci
+    # Runs on every deploy; drizzle tracks applied migrations, so it is a no-op
+    # once up to date. Creates tables, RLS policies, and the app_user role.
+    preDeployCommand: npm run db:migrate
+    startCommand: npm run ws
+    healthCheckPath: /healthz
+    envVars:
+      - key: DATABASE_ADMIN_URL
+        fromDatabase:
+          name: tandem-db
+          property: connectionString
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tandem-db
+          property: connectionString
+      - key: AUTH_SECRET
+        generateValue: true

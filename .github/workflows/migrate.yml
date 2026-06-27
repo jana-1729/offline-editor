@@ -1,0 +1,29 @@
+name: Migrate database
+
+# Auto-applies Drizzle migrations (schema + RLS + app_user role) to your
+# production database on every push to main. Use this if your DB is on Neon /
+# Supabase and your app is on Vercel (i.e. you are NOT using Render's
+# preDeployCommand to migrate).
+#
+# Required repo secret:
+#   DATABASE_ADMIN_URL — a superuser/owner Postgres URL (NOT the app_user URL).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Apply migrations
+        env:
+          DATABASE_ADMIN_URL: ${{ secrets.DATABASE_ADMIN_URL }}
+        run: npm run db:migrate
