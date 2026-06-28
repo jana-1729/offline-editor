@@ -21,10 +21,10 @@ services:
     runtime: node
     plan: free
     region: oregon
-    buildCommand: npm ci
-    # Runs on every deploy; drizzle tracks applied migrations, so it is a no-op
-    # once up to date. Creates tables, RLS policies, and the app_user role.
-    preDeployCommand: npm run db:migrate
+    # Free tier has no preDeployCommand, so migrate runs in the build step.
+    # drizzle tracks applied migrations, so it is a no-op once up to date.
+    # Creates tables, RLS policies, and the app_user role.
+    buildCommand: npm ci && npm run db:migrate
     startCommand: npm run ws
     healthCheckPath: /healthz
     envVars:
